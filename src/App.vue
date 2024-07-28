@@ -3,15 +3,12 @@ import { RouterLink, RouterView } from "vue-router";
 import { onMounted, ref } from "vue";
 import "./assets/main.css";
 import logo from "@/assets/logo.png";
-import UseAuthUser from "@/services/AuthService";
 
 const appLogo = logo;
 
 const header = ref(null);
 const footer = ref(null);
 const mainContent = ref(null);
-
-const { getUser } = UseAuthUser();
 
 onMounted(() => {
   const headerHeight = header.value.offsetHeight;

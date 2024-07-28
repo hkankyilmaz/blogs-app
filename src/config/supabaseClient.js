@@ -3,12 +3,10 @@ import { createClient } from "@supabase/supabase-js";
 import useAuthUser from "@/services/AuthService";
 
 
-
-
-
-
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
+
+import { useAuthStore } from "@/stores/user";
 
 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -16,10 +14,9 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 supabase.auth.onAuthStateChange((event, session) => {
 
-    const { user } = useAuthUser();
+    const user = useAuthStore();
+    user.setUser = session?.user || null;
 
-
-    user.value = session?.user || null;
 });
 
 
