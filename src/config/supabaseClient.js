@@ -1,6 +1,6 @@
 // UseSupabase.js
 import { createClient } from "@supabase/supabase-js";
-import useAuthUser from "@/composables/UseAuthUser";
+import useAuthUser from "@/services/AuthService";
 
 
 

@@ -1,6 +1,6 @@
 
 
-import { useSupabase } from "@/config/supabaseClient";
+import useSupabase from "@/config/supabaseClient";
 import { ref } from "vue";
 
 // user is set outside of the useAuthUser function
@@ -59,14 +59,7 @@ export default function useAuthUser() {
     const register = async ({ email, password, ...meta }) => {
         const { user, error } = await supabase.auth.signUp(
             { email, password },
-            {
-                //arbitrary meta data is passed as the second argument under a data key
-                // to the Supabase signUp method
-                data: meta,
 
-                // the to redirect to after the user confirms their email
-                redirectTo: `${window.location.origin}/me?fromEmail=registrationConfirmation"`,
-            }
         );
         if (error) throw error;
         return user;
@@ -86,11 +79,16 @@ export default function useAuthUser() {
      * (ie. support "Forgot Password?")
      */
     const sendPasswordRestEmail = async (email) => {
-        const { user, error } = await supabase.auth.api.resetPasswordForEmail(
+        const { user, error } = await supabase.auth.resetPasswordForEmail(
             email
         );
         if (error) throw error;
         return user;
+    };
+
+    const getUser = () => {
+
+        return user.value;
     };
 
     /**
@@ -112,5 +110,6 @@ export default function useAuthUser() {
         update,
         sendPasswordRestEmail,
         maybeHandleEmailConfirmation,
+        getUser
     };
 }
