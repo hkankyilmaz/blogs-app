@@ -73,6 +73,7 @@ const rules = {
 const v$ = useVuelidate(rules, state);
 
 const submit = () => {
+  console.log("submit");
   v$.value.$touch();
   errorMessage.email = "";
   errorMessage.password = "";
@@ -91,13 +92,16 @@ const submit = () => {
     return;
   } else {
     if (formType == "register") {
-      register(state.email, state.password);
+      console.log("register");
+      console.log(state.email, state.password);
+      register({ email: state.email, password: state.password });
     }
     if (formType == "login") {
-      login(state.email, state.password);
+      console.log("login");
+      login({ email: state.email, password: state.password });
     }
     if (formType == "resetPassword") {
-      sendPasswordRestEmail(state.email);
+      sendPasswordRestEmail({ email: state.email });
     }
   }
 };
