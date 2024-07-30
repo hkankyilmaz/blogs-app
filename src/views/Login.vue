@@ -2,6 +2,8 @@
 import Form from "@/components/Form.vue";
 </script>
 
-<template lang="">
-  <Form formType="login"></Form>
+<template lang="pug">
+
+Form(formType="login")
+
 </template>

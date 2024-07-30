@@ -1,0 +1,103 @@
+<script setup>
+import { required, email, helpers, sameAs } from "@vuelidate/validators";
+import { useVuelidate } from "@vuelidate/core";
+import { computed, reactive, ref } from "vue";
+import _ from "lodash";
+
+const state = reactive({
+  header: "",
+  title: "",
+  para: "",
+});
+
+const errorMessage = reactive({
+  header: "",
+  title: "",
+  para: "",
+});
+
+const rules = {
+  header: {
+    required: helpers.withMessage("! Please enter your header", required),
+    minLength: helpers.withMessage(
+      "! Header must be at least 10 characters",
+      (value) => value.length >= 15
+    ),
+  },
+  title: {
+    required: helpers.withMessage("! Please enter your title", required),
+    minLength: helpers.withMessage(
+      "! Title must be at least 20 characters",
+      (value) => value.length >= 20
+    ),
+  },
+  para: {
+    required: helpers.withMessage("! Please enter your para", required),
+    minLength: helpers.withMessage(
+      "! Para must be at least 6 characters",
+      (value) => value.length >= 100
+    ),
+  },
+};
+
+const v$ = useVuelidate(rules, state);
+
+const submit = () => {
+  v$.value.$touch();
+  errorMessage.header = "";
+  errorMessage.para = "";
+  errorMessage.title = "";
+
+  if (v$.value.$error) {
+    _.map(v$.value.$silentErrors, (value, key) => {
+      _.keys(value).map((k) => {
+        if (value.$property === "header") errorMessage.header = value.$message;
+        if (value.$property === "para") errorMessage.para = value.$message;
+        if (value.$property === "title") errorMessage.title = value.$message;
+      });
+    });
+    message.error("Please fill in the fields correctly");
+    return;
+  }
+};
+</script>
+
+<template lang="pug">
+
+form(@submit.prevent="submit")
+    h1.u1 Write a Blog
+    div
+        label Header :
+        input.form-item(v-model="state.header")
+        span(v-if="errorMessage.header") {{ errorMessage.header }}
+    div
+        label Title :
+        input.form-item(v-model="state.title")
+        span(v-if="errorMessage.title") {{ errorMessage.title }}
+    div
+        label Para :
+        textarea.form-item(v-model="state.para" rows="20")
+        span(v-if="errorMessage.para") {{ errorMessage.para }}
+    button(type="submit") Register
+</template>
+
+<style scoped>
+.u1 {
+  @apply underline text-lg font-bold;
+}
+form {
+  @apply flex flex-col space-y-4;
+}
+.form-item {
+  @apply flex flex-col space-y-2 w-[90%] p-1;
+}
+div {
+  @apply flex flex-col space-y-1;
+}
+span {
+  @apply text-xs text-red-800;
+}
+button {
+  @apply border w-[90%] px-4 py-2 bg-gray-800 text-white;
+}
+</style>
