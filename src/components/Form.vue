@@ -132,7 +132,7 @@ const submit = () => {
 
 <template lang="pug">
 
-form(class="flex flex-col w-[330px] m-auto items-center space-y-3 justify-center h-[calc(100vh-130px)]" @submit.prevent="submit")
+form(class="flex flex-col max-md:text-sm w-[330px] m-auto items-center space-y-3 justify-center h-[calc(100vh-130px)]" @submit.prevent="submit")
     input(v-if="formType == 'register'" type="text" placeholder="Name" class="p-3 border w-full focus:outline-none" v-model="state.name")
     span(v-if="errorMessage.name !== '' && formType == 'register'" class="w-full text-sm text-left") {{ errorMessage.name }}
     input(v-if="formType !== 'updatePassword'" type="text" placeholder="Email" class="p-3 border w-full focus:outline-none" v-model="state.email")

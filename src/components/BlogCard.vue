@@ -30,7 +30,7 @@ const handleDelete = async (id) => {
 const c = ref("");
 
 if (isDelete) {
-  c.value = "flex items-center space-x-4";
+  c.value = "flex items-center space-x-2 md:space-x-4";
 }
 </script>
 

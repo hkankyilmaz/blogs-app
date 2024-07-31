@@ -92,7 +92,7 @@ form(@submit.prevent="submit")
 
 <style scoped>
 form {
-  @apply flex flex-col space-y-4;
+  @apply flex flex-col space-y-2 md:space-y-4  max-md:text-sm;
 }
 .form-item {
   @apply flex flex-col space-y-2 w-[90%] p-1;
