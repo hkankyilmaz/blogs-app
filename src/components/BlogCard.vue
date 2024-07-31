@@ -6,15 +6,25 @@ import router from "@/router";
 
 const { remove } = databaseService();
 
-const { blog, delete: isDelete } = defineProps({
+const {
+  blog,
+  delete: isDelete,
+  blogs,
+  changeState,
+} = defineProps({
   blog: Object,
   delete: Boolean,
+  blogs: Array,
+  changeState: Function,
 });
 const url = `/blog/${blog.id}`;
 
 const handleDelete = async (id) => {
   remove("blog", id);
   router.push("/me");
+
+  const newBlogs = blogs.filter((b) => b.id !== id);
+  changeState(newBlogs);
 };
 
 const c = ref("");
