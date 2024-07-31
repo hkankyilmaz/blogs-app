@@ -30,7 +30,7 @@ div(v-if="delete" :class="c")
       div(class="w-full relative max-md:text-sm grid grid-cols-[80px_auto] shadow-xl bg-slate-100 hover:bg-slate-200 cursor-pointer p-2 md:p-5 rounded-lg")
           p.label Author :
           div(class="flex justify-between")
-              p {{ blog.users.username }}
+              p(class="capitalize") {{ blog.users.username }}
               p(class="text-red-800 text-xs") {{ (blog.created_at).split("T")[0] }}
           p.label Header : 
           p {{ blog.header }}

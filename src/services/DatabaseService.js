@@ -87,7 +87,7 @@ export const databaseService = () => {
 
     const readAllWithJoin = async (table, joinTables) => {
         const query = joinTables.reduce((acc, table) => `${acc},${table}(*)`, "*");
-        const { data, error } = await supabase.from(table).select(query);
+        const { data, error } = await supabase.from(table).select(query).order('created_at', { ascending: false });
 
         if (error) {
             message.error(error.message)
@@ -113,7 +113,7 @@ export const databaseService = () => {
 
     const readAllWithWhereWithJoin = async (table, joinTables, where) => {
         const query = joinTables.reduce((acc, table) => `${acc},${table}(*)`, "*");
-        const { data, error } = await supabase.from(table).select(query).eq(where.key, where.value);
+        const { data, error } = await supabase.from(table).select(query).eq(where.key, where.value).order('created_at', { ascending: false })
 
         if (error) {
             message.error(error.message)
