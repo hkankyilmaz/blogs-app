@@ -102,7 +102,7 @@ export const useAuthStore = defineStore('user', () => {
 
     const sendPasswordRestEmail = async (email) => {
         const { data, error } = await supabase.auth.resetPasswordForEmail(
-            email, { redirectTo: 'https://bloggs-app.netlify.app/reset-password' }
+            email, { redirectTo: 'https://bloggsntx-app.netlify.app/reset-password' }
         );
         if (error) {
             message.error(error.message)
