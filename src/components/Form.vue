@@ -89,6 +89,7 @@ const rules = {
 const v$ = useVuelidate(rules, state);
 
 const submit = () => {
+  console.log(state);
   console.log("submit");
   v$.value.$touch();
   errorMessage.email = "";
@@ -112,7 +113,11 @@ const submit = () => {
     if (formType == "register") {
       console.log("register");
       console.log(state.email, state.password);
-      register({ email: state.email, password: state.password });
+      register({
+        email: state.email,
+        password: state.password,
+        name: state.name,
+      });
     }
     if (formType == "login") {
       console.log("login");

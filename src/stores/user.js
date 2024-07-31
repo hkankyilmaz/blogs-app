@@ -3,7 +3,13 @@ import { defineStore } from 'pinia'
 import useSupabase from "@/config/supabaseClient";
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue';
+import { databaseService } from '@/services/DatabaseService';
+import router from '@/router';
+
+
 export const useAuthStore = defineStore('user', () => {
+
+    const { create } = databaseService()
 
     const { supabase } = useSupabase();
     const router = useRouter()
@@ -62,15 +68,19 @@ export const useAuthStore = defineStore('user', () => {
 
     };
 
-    const register = async ({ email, password, ...meta }) => {
+    const register = async ({ email, password, name }) => {
         const { data, error } = await supabase.auth.signUp(
-            { email, password });
+            { email, password, options: { data: { name } } });
         if (error) {
             message.error(error.message)
             throw error;
         }
         else {
+            message.success('Register successfully')
             setUser(data.user)
+            console.log(name)
+            await create('users', { id: data.user.id, email: data.user.email, username: name })
+            router.push('/')
             return data;
         }
 
@@ -84,14 +94,15 @@ export const useAuthStore = defineStore('user', () => {
 
         } else {
             message.success('Update successfully')
+            setUser(data.user)
         }
-        setUser(data.user)
+
         return data;
     };
 
     const sendPasswordRestEmail = async (email) => {
         const { data, error } = await supabase.auth.resetPasswordForEmail(
-            email
+            email, { redirectTo: 'http://localhost:5173//reset-password' }
         );
         if (error) {
             message.error(error.message)

@@ -2,13 +2,15 @@ import useSupabase from "@/config/supabaseClient";
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue';
 
-const databaseService = () => {
+export const databaseService = () => {
 
     const { supabase } = useSupabase();
 
-    const create = async (table, data) => {
-        const supabase = createClient();
-        const { error, data } = await supabase.from(table).insert(entity);
+    const create = async (table, _data) => {
+
+        console.log(_data)
+
+        const { error, data } = await supabase.from(table).insert(_data);
 
         if (error) {
             message.error(error.message)
@@ -21,7 +23,6 @@ const databaseService = () => {
     }
 
     const read = async (table, id) => {
-        const supabase = createClient();
         const { data, error } = await supabase.from(table).select().eq('id', id);
 
         if (error) {
@@ -34,7 +35,6 @@ const databaseService = () => {
     }
 
     const readAll = async (table) => {
-        const supabase = createClient();
         const { data, error } = await supabase.from(table).select();
 
         if (error) {
@@ -46,9 +46,20 @@ const databaseService = () => {
 
     }
 
-    const update = async (table, id, data) => {
-        const supabase = createClient();
-        const { error, data } = await supabase.from(table).update(entity).eq('id', id);
+    const readAllWithWhere = async (table, where) => {
+        const { data, error } = await supabase.from(table).select().eq(where.key, where.value);
+
+        if (error) {
+            message.error(error.message)
+            throw error
+        } else {
+            return data
+        }
+
+    }
+
+    const update = async (table, id, _data) => {
+        const { error, data } = await supabase.from(table).update(_data).eq('id', id);
 
         if (error) {
             message.error(error.message)
@@ -61,7 +72,6 @@ const databaseService = () => {
     }
 
     const remove = async (table, id) => {
-        const supabase = createClient();
         const { error, data } = await supabase.from(table).delete().eq('id', id);
 
         if (error) {
@@ -76,7 +86,6 @@ const databaseService = () => {
 
 
     const readAllWithJoin = async (table, joinTables) => {
-        const supabase = createClient();
         const query = joinTables.reduce((acc, table) => `${acc},${table}(*)`, "*");
         const { data, error } = await supabase.from(table).select(query);
 
@@ -89,9 +98,22 @@ const databaseService = () => {
     }
 
     const readRowWithJoin = async (table, joinTables, id) => {
-        const supabase = createClient();
         const query = joinTables.reduce((acc, table) => `${acc},${table}(*)`, "*");
         const { data, error } = await supabase.from(table).select(query).eq("id", id).single();
+
+        console.log(data)
+
+        if (error) {
+            message.error(error.message)
+            throw error
+        } else {
+            return data
+        }
+    }
+
+    const readAllWithWhereWithJoin = async (table, joinTables, where) => {
+        const query = joinTables.reduce((acc, table) => `${acc},${table}(*)`, "*");
+        const { data, error } = await supabase.from(table).select(query).eq(where.key, where.value);
 
         if (error) {
             message.error(error.message)
@@ -108,7 +130,9 @@ const databaseService = () => {
         update,
         remove,
         readAllWithJoin,
-        readRowWithJoin
+        readRowWithJoin,
+        readAllWithWhere,
+        readAllWithWhereWithJoin
     }
 }
 

@@ -1,8 +1,14 @@
 <script setup>
 import { required, email, helpers, sameAs } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
+import router from "@/router";
 import { computed, reactive, ref } from "vue";
+import { databaseService } from "@/services/DatabaseService";
 import _ from "lodash";
+import { useAuthStore } from "@/stores/user";
+const { create } = databaseService();
+
+const store = useAuthStore();
 
 const state = reactive({
   header: "",
@@ -34,7 +40,7 @@ const rules = {
   para: {
     required: helpers.withMessage("! Please enter your para", required),
     minLength: helpers.withMessage(
-      "! Para must be at least 6 characters",
+      "! Para must be at least 100 characters",
       (value) => value.length >= 100
     ),
   },
@@ -42,7 +48,7 @@ const rules = {
 
 const v$ = useVuelidate(rules, state);
 
-const submit = () => {
+const submit = async () => {
   v$.value.$touch();
   errorMessage.header = "";
   errorMessage.para = "";
@@ -58,6 +64,9 @@ const submit = () => {
     });
     message.error("Please fill in the fields correctly");
     return;
+  } else {
+    await create("blog", { ...state, author_id: store.user.id });
+    router.push("/me");
   }
 };
 </script>
@@ -76,7 +85,7 @@ form(@submit.prevent="submit")
         span(v-if="errorMessage.title") {{ errorMessage.title }}
     div
         label Para :
-        textarea.form-item(v-model="state.para" rows="20")
+        textarea.form-item(v-model="state.para" rows="15")
         span(v-if="errorMessage.para") {{ errorMessage.para }}
     button(type="submit") Register
 </template>
