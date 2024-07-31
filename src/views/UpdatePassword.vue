@@ -4,6 +4,6 @@ import Form from "@/components/Form.vue";
 
 <template lang="pug">
 
-Form(formType="resetPassword")
+Form(formType="updatePassword")
   
 </template>

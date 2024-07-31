@@ -1,6 +1,5 @@
 // UseSupabase.js
 import { createClient } from "@supabase/supabase-js";
-import useAuthUser from "@/services/AuthService";
 
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;

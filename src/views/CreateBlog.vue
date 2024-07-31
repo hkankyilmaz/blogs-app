@@ -82,9 +82,6 @@ form(@submit.prevent="submit")
 </template>
 
 <style scoped>
-.u1 {
-  @apply underline text-lg font-bold;
-}
 form {
   @apply flex flex-col space-y-4;
 }

@@ -1,19 +1,17 @@
 
-/**
-    * Seed data for the database
-*/
 
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
+CREATE TABLE user (
+    id TEXT PRIMARY KEY,
+    username TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE blog (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    content TEXT[] NOT NULL,
+    header TEXT NOT NULL,
+    title TEXT NOT NULL,
+    para TEXT NOT NULL,
     author_id INT NOT NULL,
     likes INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

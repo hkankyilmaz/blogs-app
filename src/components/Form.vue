@@ -5,9 +5,9 @@ import { computed, reactive, ref } from "vue";
 import _ from "lodash";
 import { message } from "ant-design-vue";
 
-import useAuthUser from "@/services/AuthService";
+import { useAuthStore } from "@/stores/user";
 
-const { register, login, sendPasswordRestEmail } = useAuthUser();
+const { register, login, sendPasswordRestEmail } = useAuthStore();
 
 const { formType } = defineProps({
   formType: {
@@ -23,15 +23,19 @@ const buttonText =
       ? "Login"
       : formType == "resetPassword"
         ? "Reset Password"
-        : "Unknown";
+        : formType == "updatePassword"
+          ? "Update Password"
+          : "Unknown";
 
 const state = reactive({
+  name: "",
   email: "",
   password: "",
   passwordConfirm: "",
 });
 
 const errorMessage = reactive({
+  name: "",
   email: "",
   password: "",
   passwordConfirm: "",
@@ -40,10 +44,22 @@ const errorMessage = reactive({
 const passwordRef = computed(() => state.password);
 
 const rules = {
-  email: {
-    required: helpers.withMessage("! Please enter your email", required),
-    email: helpers.withMessage("! Please enter a valid email", email),
-  },
+  ...(formType == "register" && {
+    name: {
+      required: helpers.withMessage("! Please enter your name", required),
+      minLength: helpers.withMessage(
+        "! Name must be at least 3 characters",
+        (value) => value.length >= 3
+      ),
+    },
+  }),
+
+  ...(formType !== "updatePassword" && {
+    email: {
+      required: helpers.withMessage("! Please enter your email", required),
+      email: helpers.withMessage("! Please enter a valid email", email),
+    },
+  }),
 
   ...(formType !== "resetPassword" && {
     password: {
@@ -78,6 +94,7 @@ const submit = () => {
   errorMessage.email = "";
   errorMessage.password = "";
   errorMessage.passwordConfirm = "";
+  errorMessage.name = "";
   if (v$.value.$error) {
     _.map(v$.value.$silentErrors, (value, key) => {
       _.keys(value).map((k) => {
@@ -86,6 +103,7 @@ const submit = () => {
           errorMessage.password = value.$message;
         if (value.$property === "passwordConfirm")
           errorMessage.passwordConfirm = value.$message;
+        if (value.$property === "name") errorMessage.name = value.$message;
       });
     });
     message.error("Please fill in the fields correctly");
@@ -101,7 +119,7 @@ const submit = () => {
       login({ email: state.email, password: state.password });
     }
     if (formType == "resetPassword") {
-      sendPasswordRestEmail({ email: state.email });
+      sendPasswordRestEmail(state.email);
     }
   }
 };
@@ -110,23 +128,29 @@ const submit = () => {
 <template lang="pug">
 
 form(class="flex flex-col w-[330px] m-auto items-center space-y-3 justify-center h-[calc(100vh-130px)]" @submit.prevent="submit")
-    input(type="text" placeholder="Email" class="p-3 border w-full focus:outline-none" v-model="state.email")
-    span(v-if="errorMessage.email !== ''" class="w-full text-sm text-left") {{ errorMessage.email }}
-    input( v-if="formType == 'login' || formType == 'register'" type="password" placeholder="Password" class="p-3 border w-full focus:outline-none" v-model="state.password")
+    input(v-if="formType == 'register'" type="text" placeholder="Name" class="p-3 border w-full focus:outline-none" v-model="state.name")
+    span(v-if="errorMessage.name !== '' && formType == 'register'" class="w-full text-sm text-left") {{ errorMessage.name }}
+    input(v-if="formType !== 'updatePassword'" type="text" placeholder="Email" class="p-3 border w-full focus:outline-none" v-model="state.email")
+    span(v-if="errorMessage.email !== '' && formType !== 'updatePassword'" class="w-full text-sm text-left") {{ errorMessage.email }}
+    input( v-if="formType == 'login' || formType == 'register' || formType == 'updatePassword'" type="password" placeholder="Password" class="p-3 border w-full focus:outline-none" v-model="state.password")
     span(v-if="errorMessage.password !== '' && formType !== 'resetPassword'" class="w-full text-sm text-left") {{ errorMessage.password }}
     input(v-if="formType == 'register'" type="password" placeholder="Confirm Password" class="p-3 border w-full focus:outline-none" v-model="state.passwordConfirm")
     span(v-if="errorMessage.passwordConfirm !== '' && formType == 'register'" class="w-full text-sm text-left") {{ errorMessage.passwordConfirm }}
     button(type="submit" class="border p-3 w-full bg-black text-white cursor-pointer border-none")  {{  buttonText }}
-    span(v-if="formType == 'register'" class="") Already have an account? 
+    span.j(v-if="formType == 'register'" class="") Already have an account? 
       RouterLink(to="/login" class="underline") Login
-    div(v-if="formType == 'login'" class="flex flex-col items-center space-y-0")
+    div.j(v-if="formType == 'login'" class="flex flex-col items-center space-y-0")
       span Don't have an account? 
         RouterLink(to="/register" class="underline") Register
       span Forgot Password? 
         RouterLink(to="/reset-password" class="underline") Reset Password
-    span(v-if="formType == 'resetPassword'" class="") Have you Remember the Password? 
+    span.j(v-if="formType == 'resetPassword'" class="") Have you Remember the Password? 
       RouterLink(to="/login" class="underline") Login
 
 </template>
 
-<style lang=""></style>
+<style scoped>
+span:not(.j, .j *) {
+  @apply text-xs text-red-800;
+}
+</style>
